@@ -26,9 +26,11 @@ def set_conf():
     #conf.ID = sys.argv[2]
     conf.ID = '45'
     conf.sDatahomePath = "/mnt/datapool/RemoteSensingData1/DataWorking/"
+    # conf.sDatahomePath = "H:\\RDCRMG_test_data"
     conf.search_time = "20180627"
     # conf.search_time = "all"
     conf.sRslPath = "/mnt/datapool/RemoteSensingData/liudiyou20140/rlt_RDCRMG/" + conf.search_time + "_" + conf.ID
+    # conf.sRslPath = ""H:\\32652/" + conf.search_time + "_" + conf.ID
     conf.output_format = '.png' # available value: .png .tif
     conf.export_excel = pd.DataFrame({"id" : [], 'mean':[]})
     conf.iDataProduct = 1
