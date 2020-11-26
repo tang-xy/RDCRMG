@@ -1,6 +1,7 @@
 # coding:utf-8
 import sys
 import os
+import shutil
 from time import time
 import numpy as np
 import pandas as pd
@@ -21,16 +22,16 @@ def set_conf():
     #     exit()
     
     #conf.jsonpath = sys.argv[1]
-    conf.jsonpath = r"H:\Json\2020-11-09.json"
-    # conf.jsonpath = r"H:\32652\out.geo.json"
+    # conf.jsonpath = r"H:\Json\2020-11-09.json"
+    conf.jsonpath = r"H:\32652\out.geo.json"
     #conf.ID = sys.argv[2]
     conf.ID = '45'
-    conf.sDatahomePath = "/mnt/datapool/RemoteSensingData1/DataWorking/"
-    # conf.sDatahomePath = "H:\\RDCRMG_test_data"
-    conf.search_time = "20180627"
-    # conf.search_time = "all"
-    conf.sRslPath = "/mnt/datapool/RemoteSensingData/liudiyou20140/rlt_RDCRMG/" + conf.search_time + "_" + conf.ID
-    # conf.sRslPath = ""H:\\32652/" + conf.search_time + "_" + conf.ID
+    # conf.sDatahomePath = "/mnt/datapool/RemoteSensingData1/DataWorking/"
+    conf.sDatahomePath = "H:\\RDCRMG_test_data"
+    # conf.search_time = "20180627"
+    conf.search_time = "all"
+    # conf.sRslPath = "/mnt/datapool/RemoteSensingData/liudiyou20140/rlt_RDCRMG/" + conf.search_time + "_" + conf.ID
+    conf.sRslPath = "H:\\32652/" + conf.search_time + "_" + conf.ID
     conf.output_format = '.png' # available value: .png .tif
     conf.export_excel = pd.DataFrame({"id" : [], 'mean':[]})
     conf.iDataProduct = 1
@@ -98,23 +99,37 @@ if __name__ == "__main__":
     start = time()
     set_conf()
     os.mkdir(conf.sRslPath)
+    temppath = os.path.join(conf.sRslPath ,"temp")
+    os.mkdir(temppath)
 
     pWGSLT, pWGSRB  = BaseProcesses.read_json_area(conf.jsonpath)
     unitblock_list = get_unitblock_list(pWGSLT, pWGSRB)
     grid_dic = {}
     for unitblock in unitblock_list:
+        grid_dic_ipcs = {}
         lsGridcode = GridCalculate.GridCodeToGridlist_iPCSType(unitblock['sGridCodeLT'],\
          unitblock['sGridCodeRB'], unitblock['iPCSType'])
         for sGridCode in lsGridcode:
             lbds10kmIn = SearchEngine.SearchByRgDttmDtpd(sGridCode, conf.sDatahomePath, conf.search_time,
              conf.iDataProduct, conf.iCloulLevel)
             for lbd_time in lbds10kmIn:
-                if lbd_time not in grid_dic.keys():
-                    grid_dic[lbd_time] = [gdal.Open(lbd.sPathName) for lbd in lbds10kmIn[lbd_time]]
+                if lbd_time not in grid_dic_ipcs.keys():
+                    grid_dic_ipcs[lbd_time] = [gdal.Open(lbd.sPathName) for lbd in lbds10kmIn[lbd_time]]
                 else:
-                    grid_dic[lbd_time] += [gdal.Open(lbd.sPathName) for lbd in lbds10kmIn[lbd_time]]
+                    grid_dic_ipcs[lbd_time] += [gdal.Open(lbd.sPathName) for lbd in lbds10kmIn[lbd_time]]
+        for lbd_time in grid_dic_ipcs.keys():
+            options = gdal.WarpOptions(format='GTiff', dstSRS='EPSG:900913')
+            output_path = os.path.join(temppath, lbd_time + str(unitblock['iPCSType']) + '.tif')
+            if lbd_time not in grid_dic.keys():
+                grid_dic[lbd_time] = [gdal.Warp(output_path, grid_dic_ipcs[lbd_time], options=options)]
+            else:
+                grid_dic[lbd_time] += [gdal.Warp(output_path, grid_dic_ipcs[lbd_time], options=options)]
+            for ds in grid_dic_ipcs[lbd_time]:
+                del ds
 
     for lbd_time in grid_dic:
         clip_dataset_list_groupby_time(grid_dic[lbd_time], lbd_time)
+    grid_dic = None
+    shutil.rmtree(temppath)
     end = time()
     print("耗时{0}".format(end-start))
