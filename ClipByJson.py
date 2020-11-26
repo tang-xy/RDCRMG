@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from osgeo import gdal
 from PIL import Image
+import resource
 
 from SearchEngine import SearchEngine
 from Stitching import Stitching
@@ -76,7 +77,7 @@ def clip_dataset_list_groupby_time(grid_list, time):
     '''输入相同时间的一组grid_list，对其进行拼接剪切
     '''
     output_path = os.path.join(conf.sRslPath, conf.ID + time + '_1.tif')
-    options=gdal.WarpOptions(format='GTiff', cutlineDSName = conf.jsonpath, dstSRS='EPSG:900913')
+    options=gdal.WarpOptions(format='GTiff', dstSRS='EPSG:900913')
     tif_dataset = gdal.Warp(output_path, grid_list, options=options)
     mean = NdviCompute.ndvi_compute_byds(tif_dataset, os.path.join(conf.sRslPath, conf.ID + time + '_2' + conf.output_format), NdviCompute.IMAGE_TYPE_GF1)
     if conf.output_format == '.png':
@@ -119,11 +120,11 @@ if __name__ == "__main__":
                 else:
                     grid_dic_ipcs[lbd_time] += [gdal.Open(lbd.sPathName) for lbd in lbds10kmIn[lbd_time]]
                 if len(grid_dic_ipcs[lbd_time]) > 20:
-                    options = gdal.WarpOptions(format='GTiff', dstSRS='EPSG:900913')
+                    options = gdal.WarpOptions(format='GTiff', cutlineDSName = conf.jsonpath, dstSRS='EPSG:900913')
                     output_path = os.path.join(temppath, lbd_time + str(unitblock['iPCSType']) + str(i) + '.tif')
                     grid_dic_ipcs[lbd_time] = [gdal.Warp(output_path, grid_dic_ipcs[lbd_time], options=options)]
         for lbd_time in grid_dic_ipcs.keys():
-            options = gdal.WarpOptions(format='GTiff', dstSRS='EPSG:900913')
+            options = gdal.WarpOptions(format='GTiff', cutlineDSName = conf.jsonpath, dstSRS='EPSG:900913')
             output_path = os.path.join(temppath, lbd_time + str(unitblock['iPCSType']) + '.tif')
             if lbd_time not in grid_dic.keys():
                 grid_dic[lbd_time] = [gdal.Warp(output_path, grid_dic_ipcs[lbd_time], options=options)]
