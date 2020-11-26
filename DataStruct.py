@@ -12,7 +12,6 @@ class DataStruct():
     @staticmethod
     def GetBasicDataInforList(lsFilePathname):
         lBds = []
-        print(lsFilePathname)
         for sPathName in lsFilePathname:
             bds = basic_data_struct()
             bds.sPathName = sPathName
@@ -20,7 +19,7 @@ class DataStruct():
             bds.sGridCode = sFilename[0: 6]
             bds.sTimeYear = sFilename[6: 10]
             bds.sTimeDeail = sFilename[6: 14]
-
+            print(sFilename)
             iMarkPixelRang = DataStruct.JudgeLengthOfPixelRang(sFilename)
 
             bds.iColumnBeg =  int(sFilename[14: 14 + iMarkPixelRang])
