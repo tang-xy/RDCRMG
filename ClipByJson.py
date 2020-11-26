@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from osgeo import gdal
 from PIL import Image
-import resource
+import tracemalloc
 
 from SearchEngine import SearchEngine
 from Stitching import Stitching
@@ -98,6 +98,7 @@ def clip_dataset_list_groupby_time(grid_list, time):
 
 if __name__ == "__main__":
     start = time()
+    tracemalloc.start()
     set_conf()
     os.mkdir(conf.sRslPath)
     temppath = os.path.join(conf.sRslPath ,"temp")
@@ -120,9 +121,11 @@ if __name__ == "__main__":
                 else:
                     grid_dic_ipcs[lbd_time] += [gdal.Open(lbd.sPathName) for lbd in lbds10kmIn[lbd_time]]
                 if len(grid_dic_ipcs[lbd_time]) > 20:
-                    options = gdal.WarpOptions(format='GTiff', cutlineDSName = conf.jsonpath, dstSRS='EPSG:900913')
+                    options = gdal.WarpOptions(format='GTiff', dstSRS='EPSG:900913')
                     output_path = os.path.join(temppath, lbd_time + str(unitblock['iPCSType']) + str(i) + '.tif')
                     grid_dic_ipcs[lbd_time] = [gdal.Warp(output_path, grid_dic_ipcs[lbd_time], options=options)]
+            current, peak = tracemalloc.get_traced_memory()
+            print(f"Current memory usage is {current / 10**6}MB; Peak was {peak / 10**6}MB")
         for lbd_time in grid_dic_ipcs.keys():
             options = gdal.WarpOptions(format='GTiff', cutlineDSName = conf.jsonpath, dstSRS='EPSG:900913')
             output_path = os.path.join(temppath, lbd_time + str(unitblock['iPCSType']) + '.tif')
@@ -138,4 +141,5 @@ if __name__ == "__main__":
     grid_dic = None
     shutil.rmtree(temppath)
     end = time()
+    tracemalloc.stop()
     print("耗时{0}".format(end-start))
