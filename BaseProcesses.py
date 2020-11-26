@@ -27,10 +27,10 @@ class BaseProcesses:
         with open(jsonpath, encoding='utf8') as json_file:
             json_str = json_file.read()
         features = json.loads(json_str)["features"]
-        x_max = features[0]['geometry']['coordinates'][0][0][0][0]
-        x_min = features[0]['geometry']['coordinates'][0][0][0][0]
-        y_max = features[0]['geometry']['coordinates'][0][0][0][1]
-        y_min = features[0]['geometry']['coordinates'][0][0][0][1]
+        x_max = features[0]['geometry']['coordinates'][0][0][0]
+        x_min = features[0]['geometry']['coordinates'][0][0][0]
+        y_max = features[0]['geometry']['coordinates'][0][0][1]
+        y_min = features[0]['geometry']['coordinates'][0][0][1]
         for feature in  features:
             if feature['geometry']['type'] == "Polygon":
                 for coordinate in feature['geometry']['coordinates']:

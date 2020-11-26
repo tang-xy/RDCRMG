@@ -12,6 +12,7 @@ class DataStruct():
     @staticmethod
     def GetBasicDataInforList(lsFilePathname):
         lBds = []
+        print(lsFilePathname)
         for sPathName in lsFilePathname:
             bds = basic_data_struct()
             bds.sPathName = sPathName

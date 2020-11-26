@@ -22,16 +22,16 @@ def set_conf():
     #     exit()
     
     #conf.jsonpath = sys.argv[1]
-    # conf.jsonpath = r"H:\Json\2020-11-09.json"
-    conf.jsonpath = r"H:\32652\out.geo.json"
+    conf.jsonpath = r"./2020-11-09.json"
+    # conf.jsonpath = r"H:\32652\out.geo.json"
     #conf.ID = sys.argv[2]
     conf.ID = '45'
-    # conf.sDatahomePath = "/mnt/datapool/RemoteSensingData1/DataWorking/"
-    conf.sDatahomePath = "H:\\RDCRMG_test_data"
-    # conf.search_time = "20180627"
-    conf.search_time = "all"
-    # conf.sRslPath = "/mnt/datapool/RemoteSensingData/liudiyou20140/rlt_RDCRMG/" + conf.search_time + "_" + conf.ID
-    conf.sRslPath = "H:\\32652/" + conf.search_time + "_" + conf.ID
+    conf.sDatahomePath = "/mnt/datapool/RemoteSensingData1/DataWorking/"
+    # conf.sDatahomePath = "H:\\RDCRMG_test_data"
+    conf.search_time = "20180627"
+    # conf.search_time = "all"
+    conf.sRslPath = "/mnt/datapool/RemoteSensingData/liudiyou20140/rlt_RDCRMG/" + conf.search_time + "_" + conf.ID
+    # conf.sRslPath = "H:\\32652/" + conf.search_time + "_" + conf.ID
     conf.output_format = '.png' # available value: .png .tif
     conf.export_excel = pd.DataFrame({"id" : [], 'mean':[]})
     conf.iDataProduct = 1
@@ -105,6 +105,7 @@ if __name__ == "__main__":
     pWGSLT, pWGSRB  = BaseProcesses.read_json_area(conf.jsonpath)
     unitblock_list = get_unitblock_list(pWGSLT, pWGSRB)
     grid_dic = {}
+    i = 0
     for unitblock in unitblock_list:
         grid_dic_ipcs = {}
         lsGridcode = GridCalculate.GridCodeToGridlist_iPCSType(unitblock['sGridCodeLT'],\
@@ -117,6 +118,10 @@ if __name__ == "__main__":
                     grid_dic_ipcs[lbd_time] = [gdal.Open(lbd.sPathName) for lbd in lbds10kmIn[lbd_time]]
                 else:
                     grid_dic_ipcs[lbd_time] += [gdal.Open(lbd.sPathName) for lbd in lbds10kmIn[lbd_time]]
+                if len(grid_dic_ipcs[lbd_time]) > 20:
+                    options = gdal.WarpOptions(format='GTiff', dstSRS='EPSG:900913')
+                    output_path = os.path.join(temppath, lbd_time + str(unitblock['iPCSType']) + str(i) + '.tif')
+                    grid_dic_ipcs[lbd_time] = [gdal.Warp(output_path, grid_dic_ipcs[lbd_time], options=options)]
         for lbd_time in grid_dic_ipcs.keys():
             options = gdal.WarpOptions(format='GTiff', dstSRS='EPSG:900913')
             output_path = os.path.join(temppath, lbd_time + str(unitblock['iPCSType']) + '.tif')
