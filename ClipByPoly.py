@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from osgeo import gdal
 from PIL import Image
-import tracemalloc
 
 from SearchEngine import SearchEngine
 from Stitching import Stitching
@@ -97,7 +96,6 @@ def clip_dataset_list_groupby_time(grid_list, time):
 
 def clip_poly(jsonpath, task_id, search_time):
     start = time()
-    tracemalloc.start()
     set_conf(jsonpath, task_id, search_time)
     os.mkdir(conf.sRslPath)
     temppath = os.path.join(conf.sRslPath ,"temp")
@@ -123,8 +121,6 @@ def clip_poly(jsonpath, task_id, search_time):
                     options = gdal.WarpOptions(format='GTiff', dstSRS='EPSG:900913')
                     output_path = os.path.join(temppath, lbd_time + str(unitblock['iPCSType']) + str(i) + '.tif')
                     grid_dic_ipcs[lbd_time] = [gdal.Warp(output_path, grid_dic_ipcs[lbd_time], options=options)]
-            current, peak = tracemalloc.get_traced_memory()
-            print(f"Current memory usage is {current / 10**6}MB; Peak was {peak / 10**6}MB")
         for lbd_time in grid_dic_ipcs.keys():
             options = gdal.WarpOptions(format='GTiff', cutlineDSName = conf.jsonpath, dstSRS='EPSG:900913')
             output_path = os.path.join(temppath, lbd_time + str(unitblock['iPCSType']) + '.tif')
@@ -140,5 +136,4 @@ def clip_poly(jsonpath, task_id, search_time):
     grid_dic = None
     shutil.rmtree(temppath)
     end = time()
-    tracemalloc.stop()
     print("任务{1}耗时{0}".format(end-start, task_id))
