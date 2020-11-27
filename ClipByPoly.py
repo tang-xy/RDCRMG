@@ -136,4 +136,4 @@ def clip_poly(jsonpath, task_id, search_time):
     grid_dic = None
     shutil.rmtree(temppath)
     end = time()
-    print("任务{1}耗时{0}".format(end-start, task_id))
+    print("任务{1}耗时{0}，涉及{2}个格网".format(end-start, task_id, len(unitblock_list)))
