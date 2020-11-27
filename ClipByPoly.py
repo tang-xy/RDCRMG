@@ -74,12 +74,18 @@ def get_unitblock_list(pWGSLT, pWGSRB):
 def clip_dataset_list_groupby_time(grid_list, time):
     '''输入相同时间的一组grid_list，对其进行拼接剪切
     '''
+    conf.export_excel = pd.DataFrame({"id" : [], 'mean':[]})
     output_path = os.path.join(conf.sRslPath, conf.ID + time + '_1.tif')
+    print(output_path)
     options=gdal.WarpOptions(format='GTiff', dstSRS='EPSG:900913')
+    print("options")
     tif_list = [gdal.Open(path) for path in grid_list]
+    print("opened")
     tif_dataset = gdal.Warp(output_path, tif_list, options=options)
+    print("warped")
     tif_list = None
     mean = NdviCompute.ndvi_compute_byds(tif_dataset, os.path.join(conf.sRslPath, conf.ID + time + '_2' + conf.output_format), NdviCompute.IMAGE_TYPE_GF1)
+    print("ndvi")
     if conf.output_format == '.png':
         iRowRange = tif_dataset.RasterYSize
         iColumnRange = tif_dataset.RasterXSize
