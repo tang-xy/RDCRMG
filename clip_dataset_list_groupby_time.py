@@ -12,7 +12,7 @@ def clip_dataset_list_groupby_time(grid_list, time):
     conf.export_excel = pd.DataFrame({"id" : [], 'mean':[]})
     output_path = os.path.join(conf.sRslPath, conf.ID + time + '_1.tif')
     print(output_path)
-    options=gdal.WarpOptions(format='GTiff', dstSRS='EPSG:900913')
+    options=gdal.WarpOptions(format='GTiff', cutlineDSName = conf.jsonpath, dstSRS='EPSG:900913')
     print("options")
     tif_list = [gdal.Open(path) for path in grid_list]
     print("opened")
