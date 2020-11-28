@@ -8,7 +8,7 @@ from ClipByPoly import clip_poly
 
 if __name__ == "__main__":
     jsonpath = r"./2020-11-09.json"
-    search_time = "20180627"
+    search_time = "all"
     with open(jsonpath) as jsonfile:
         jsonstr = jsonfile.read()
     features = json.loads(jsonstr)["features"]
