@@ -11,6 +11,9 @@ from BaseProcesses import BaseProcesses
 import conf
 IMAGE_TYPE_GF1 = 1
 
+color_list = [[194, 82, 60], [217, 116, 39], [237, 167, 17], [250, 226, 7],\
+    [180, 245, 0], [33, 222, 0], [17, 189, 83], [32, 153, 143]]
+
 def div0( a, b ):
     """ ignore / 0, div0( [-1, 0, 1], 0 ) -> [0, 0, 0] """
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -45,7 +48,9 @@ def ndvi_compute_byds(input_dataset, output_path, image_type):
         output_band = np.zeros((iRowRange, iColumnRange, 3), dtype = np.uint8)
         for i in range(iRowRange):
             for j in range(iColumnRange):
-                output_band[i, j, :] = np.array(color_list[int(ndvi_band[i, j] + 1) * 4])
+                output_band[i, j, :] = np.array(color_list[int((ndvi_band[i, j] + 1) * 4 - 0.0001)])
+                if ndvi_band[i, j] == 0:
+                    output_band[i, j, :] = np.array([0, 0, 0])
         im = Image.fromarray(output_band)
         im.save(output_path)
     return mean

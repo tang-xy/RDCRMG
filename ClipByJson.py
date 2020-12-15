@@ -13,7 +13,7 @@ if __name__ == "__main__":
         jsonstr = jsonfile.read()
     features = json.loads(jsonstr)["features"]
     os.mkdir('temp')
-    for i in range(len(features)):
+    for i in range(1):
         with open('temp/{0}.json'.format(i), 'w') as json_file:
             dic = {"type": "FeatureCollection"}
             dic["features"] = [features[i]]

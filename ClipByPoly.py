@@ -23,12 +23,12 @@ def set_conf(jsonpath, task_id, search_time):
     # conf.jsonpath = r"H:\32652\out.geo.json"
     conf.ID = task_id
     # conf.ID = '45'
-    conf.sDatahomePath = "/mnt/datapool/RemoteSensingData1/DataWorking/"
-    # conf.sDatahomePath = "H:\\RDCRMG_test_data"
+    # conf.sDatahomePath = "/mnt/datapool/RemoteSensingData1/DataWorking/"
+    conf.sDatahomePath = "H:\\RDCRMG_test_data"
     conf.search_time = search_time
     # conf.search_time = "all"
-    conf.sRslPath = "/mnt/datapool/RemoteSensingData/liudiyou20140/rlt_RDCRMG/" + conf.search_time + "_" + conf.ID
-    # conf.sRslPath = "H:\\32652/" + conf.search_time + "_" + conf.ID
+    # conf.sRslPath = "/mnt/datapool/RemoteSensingData/liudiyou20140/rlt_RDCRMG/" + conf.search_time + "_" + conf.ID
+    conf.sRslPath = "H:\\32652/" + conf.search_time + "_" + conf.ID
     conf.output_format = '.png' # available value: .png .tif
     conf.export_excel = pd.DataFrame({"id" : [], 'mean':[]})
     conf.iDataProduct = 1
