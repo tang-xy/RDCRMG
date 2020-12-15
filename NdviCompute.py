@@ -45,12 +45,12 @@ def ndvi_compute_byds(input_dataset, output_path, image_type):
         # ndvi_band = (ndvi_band - np.min(ndvi_band)) * 255 / np.max(ndvi_band)
         # im = Image.fromarray(np.uint8(ndvi_band))
         # im.save(output_path)
-        output_band = np.zeros((iRowRange, iColumnRange, 3), dtype = np.uint8)
+        output_band = np.zeros((iRowRange, iColumnRange, 4), dtype = np.uint8)
         for i in range(iRowRange):
             for j in range(iColumnRange):
-                output_band[i, j, :] = np.array(color_list[int((ndvi_band[i, j] + 1) * 4 - 0.0001)])
+                output_band[i, j, :] = np.array(color_list[int((ndvi_band[i, j] + 1) * 4 - 0.0001)] + [255])
                 if ndvi_band[i, j] == 0:
-                    output_band[i, j, :] = np.array([0, 0, 0])
+                    output_band[i, j, :] = np.array([0, 0, 0, 0])
         im = Image.fromarray(output_band)
         im.save(output_path)
     return mean
