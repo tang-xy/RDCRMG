@@ -39,7 +39,13 @@ def ndvi_compute_byds(input_dataset, output_path, image_type):
         dataset_res.GetRasterBand(1).WriteArray(ndvi_band, 0, 0)
         del dataset_res
     elif os.path.splitext(output_path)[-1] == ".png":
-        ndvi_band = (ndvi_band - np.min(ndvi_band)) * 255 / np.max(ndvi_band)
-        im = Image.fromarray(np.uint8(ndvi_band))
+        # ndvi_band = (ndvi_band - np.min(ndvi_band)) * 255 / np.max(ndvi_band)
+        # im = Image.fromarray(np.uint8(ndvi_band))
+        # im.save(output_path)
+        output_band = np.zeros((iRowRange, iColumnRange, 3), dtype = np.uint8)
+        for i in range(iRowRange):
+            for j in range(iColumnRange):
+                output_band[i, j, :] = np.array(color_list[int(ndvi_band[i, j] + 1) * 4])
+        im = Image.fromarray(output_band)
         im.save(output_path)
     return mean
