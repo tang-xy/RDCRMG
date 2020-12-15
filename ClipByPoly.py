@@ -15,7 +15,7 @@ from BaseProcesses import BaseProcesses
 import conf
 from clip_dataset_list_groupby_time import clip_dataset_list_groupby_time
 
-def set_conf(jsonpath, task_id, search_time):
+def set_conf(jsonpath, task_id, search_time, res_path):
 
     
     conf.jsonpath = jsonpath
@@ -23,12 +23,13 @@ def set_conf(jsonpath, task_id, search_time):
     # conf.jsonpath = r"H:\32652\out.geo.json"
     conf.ID = task_id
     # conf.ID = '45'
-    # conf.sDatahomePath = "/mnt/datapool/RemoteSensingData1/DataWorking/"
-    conf.sDatahomePath = "H:\\RDCRMG_test_data"
+    conf.sDatahomePath = "/mnt/datapool/RemoteSensingData1/DataWorking/"
+    # conf.sDatahomePath = "H:\\RDCRMG_test_data"
     conf.search_time = search_time
     # conf.search_time = "all"
     # conf.sRslPath = "/mnt/datapool/RemoteSensingData/liudiyou20140/rlt_RDCRMG/" + conf.search_time + "_" + conf.ID
-    conf.sRslPath = "H:\\32652/" + conf.search_time + "_" + conf.ID
+    # conf.sRslPath = "H:\\32652/" + conf.search_time + "_" + conf.ID
+    conf.sRslPath = res_path
     conf.output_format = '.png' # available value: .png .tif
     conf.export_excel = pd.DataFrame({"id" : [], 'mean':[]})
     conf.iDataProduct = 1
@@ -70,12 +71,10 @@ def get_unitblock_list(pWGSLT, pWGSRB):
     return result
 
 
-def clip_poly(jsonpath, task_id, search_time):
+def clip_poly(jsonpath, task_id, search_time, res_path):
     start = time()
-    set_conf(jsonpath, task_id, search_time)
-    os.mkdir(conf.sRslPath)
-    temppath = os.path.join(conf.sRslPath ,"temp")
-    os.mkdir(temppath)
+    set_conf(jsonpath, task_id, search_time, res_path)
+    # os.mkdir(conf.sRslPath)
 
     pWGSLT, pWGSRB  = BaseProcesses.read_json_area(conf.jsonpath)
     unitblock_list = get_unitblock_list(pWGSLT, pWGSRB)
@@ -96,6 +95,5 @@ def clip_poly(jsonpath, task_id, search_time):
     for lbd_time in grid_dic:
         clip_dataset_list_groupby_time(grid_dic[lbd_time], lbd_time)
     grid_dic = None
-    shutil.rmtree(temppath)
     end = time()
     print("任务{1}耗时{0}，涉及{2}个条带".format(end-start, task_id, len(unitblock_list)))
