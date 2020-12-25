@@ -96,17 +96,17 @@ class Stitching():
         for Bd in lBds:
             if (Bd.iRowRange != 10000 / Bd.iResolution) or (Bd.iColumnRange != 10000 / Bd.iResolution):
                 bdsFullCover = basic_data_struct()
-                bdsFullCover = Bd
+                bdsFullCover = copy.deepcopy(Bd)
                 bdsFullCover.iRowBeg = 0
                 bdsFullCover.iRowRange = 10000 / bdsFullCover.iResolution
                 bdsFullCover.iColumnBeg = 0
                 bdsFullCover.iColumnRange = 10000 / bdsFullCover.iResolution
-                iLengthOfLocatMark = bdsFullCover.iRowRange.ToString().Length
+                iLengthOfLocatMark = len(str(bdsFullCover.iRowRange))
                 IntToString = CoordinateAndProjection.IntToString
                 RltImgName = bdsFullCover.sGridCode + bdsFullCover.sTimeDeail + IntToString(bdsFullCover.iColumnBeg, iLengthOfLocatMark) + IntToString(bdsFullCover.iRowBeg, iLengthOfLocatMark)\
-                                + bdsFullCover.iColumnRange.ToString() + bdsFullCover.iRowRange.ToString()\
+                                + str(bdsFullCover.iColumnRange) + str(bdsFullCover.iRowRange)\
                                 + IntToString(bdsFullCover.iResolution, 3)\
-                                + bdsFullCover.iCloudLevel.ToString()\
+                                + str(bdsFullCover.iCloudLevel)\
                                 + IntToString(bdsFullCover.iDataProduct, 3) + ".tif"
                 iZoneIndex = bdsFullCover.sPathName.index("326")
                 sZoneName = bdsFullCover.sPathName[iZoneIndex: 5 + iZoneIndex]
@@ -114,7 +114,7 @@ class Stitching():
                 iRltDataType = Stitching.JudgeResultDataType(bdsFullCover.iDataProduct, 0)
                 iBandNum = Stitching.CreateResultImg_2(bdsFullCover, Bd, iRltDataType)
 
-                lbds_temp = [Bd]
+                lbds_temp = [copy.deepcopy(Bd)]
                 Stitching.ModelOfIntegrate_3(bdsFullCover, lbds_temp, iRltDataType, iBandNum)
                 lbdsFullCover.append(bdsFullCover)
             else:
@@ -219,7 +219,7 @@ class Stitching():
         
         for b in range(1, iBandNum + 1):
             if (iRltDataType == 1 or iRltDataType == 2):
-                uiDatabuffer_rlt = np.zeros(bdsRlt.iColumnRange * bdsRlt.iRowRange, dtype=np.int16)
+                uiDatabuffer_rlt = np.zeros(int(bdsRlt.iColumnRange * bdsRlt.iRowRange), dtype=np.int16)
             elif (iRltDataType == 3 or iRltDataType == 4):
                 uiDatabuffer_rlt = np.zeros(bdsRlt.iColumnRange * bdsRlt.iRowRange, dtype=np.float64)
             for i in range(len(lbdsBeDeal)):
@@ -228,10 +228,10 @@ class Stitching():
                 for n in range(bdsTemp.iRowRange):
                     for m in range(bdsTemp.iColumnRange):
                         v = int(bdsRlt.iColumnRange * (n + (bdsTemp.iRowBeg - bdsRlt.iRowBeg)) + (m + (bdsTemp.iColumnBeg - bdsRlt.iColumnBeg)))
-                        if (uiDatabuffer_temp[m][n] != 0):
-                            uiDatabuffer_rlt[v] = uiDatabuffer_temp[m][n]
+                        if (uiDatabuffer_temp[n][m] != 0):
+                            uiDatabuffer_rlt[v] = uiDatabuffer_temp[n][m]
             # dsRlt.GetRasterBand(b).WriteRaster(0, 0, bdsRlt.iColumnRange, bdsRlt.iRowRange, uiDatabuffer_rlt, bdsRlt.iColumnRange, bdsRlt.iRowRange)            
-            uiDatabuffer_rlt_reshape = uiDatabuffer_rlt.reshape((bdsRlt.iColumnRange, bdsRlt.iRowRange))
+            uiDatabuffer_rlt_reshape = uiDatabuffer_rlt.reshape((int(bdsRlt.iRowRange), int(bdsRlt.iColumnRange)))
             dsRlt.GetRasterBand(b).WriteArray(uiDatabuffer_rlt_reshape, 0, 0)            
         del dsRlt
         for img in dtsImg:
