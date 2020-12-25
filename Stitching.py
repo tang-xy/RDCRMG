@@ -143,7 +143,7 @@ class Stitching():
     def SynthesizeSameTemporalImages(lBds, sResultPath):
         lBds = sorted(lBds, key = lambda a: a.iCloudLevel)
 
-        bdsRlt = lBds[0]
+        bdsRlt = copy.deepcopy(lBds[0])
         bdsRlt.iCloudLevel = 0 #合成后默认云量为<10%
         bdsRlt.iRowBeg = 0
         bdsRlt.iRowRange = int(10000 / bdsRlt.iResolution)

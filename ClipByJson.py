@@ -9,7 +9,8 @@ from ClipByPoly import clip_poly
 if __name__ == "__main__":
     jsonpath = r"./2020-11-09.json"
     search_time = "all"
-    res_path = "/mnt/datapool/RemoteSensingData/liudiyou20140/rlt_RDCRMG/" + os.path.basename(jsonpath)[:10]
+    # res_path = "/mnt/datapool/RemoteSensingData/liudiyou20140/rlt_RDCRMG/" + os.path.basename(jsonpath)[:10]
+    res_path = r'./d'
     os.mkdir(res_path)
     with open(jsonpath) as jsonfile:
         jsonstr = jsonfile.read()
