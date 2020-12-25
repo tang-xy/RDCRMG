@@ -50,7 +50,7 @@ def ExtractSITSforEvery10kmGrid(lbds, iDataSet, iDataMap, sWorkSpace):
     shutil.copy(lbds[iImageSelected].sPathName, os.path.join(sRltPathFinaly, sFileName))
 
 def GenerateSITSOfPixleLevel(bIrregular = True):
-    _sDataHome = r"H:\RDCRMG_test_data"
+    _sDataHome = r"/mnt/datapool/RemoteSensingData1/DataWorking/"
     _sRslPath = r"./"
 
     sGridcodeTargetFile = r"./8_Manasi_grid_spl.csv"
