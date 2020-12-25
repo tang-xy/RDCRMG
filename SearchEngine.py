@@ -7,6 +7,49 @@ import conf
 class SearchEngine:
 
     @staticmethod
+    def SearchSatMap(lsGridcode, sDateBeg, sDateEnd, iDataSet, iDataMap, iCloulLevel, sDatahomePath):
+        '''************逻辑***************//  
+        #1 将格网序列变成格网路径序列                                ——ls10kmPath
+        #2 判断所查年份是否存在                                      ——ll10kmYearPath            
+        #3 不存在，剔除该路径(即最终结果不包含该10km格网)            ——ls10kmPath 
+        #4 存在，根据日期区间得到每个10km格网下符合条件的bds的序列   ——l10kmlbds 
+        #        是否在日期区间内
+        #          是否属于Set类型
+        #          是否属于满足格网覆盖度且云量不大于阈值
+        #          是否属于Map类型
+        #            抽出该bds数据文件
+        #        如果有满足条件的影像序列，对其按日期升序排序
+        #        将样本Map数据文件添加到结果序列的首位'''
+
+        bDataMap = False
+        lsTkmPath = lsGridcode
+        res = []
+        for i in range(len(lsTkmPath)):
+            lsTkmPath[i] = path.join(sDatahomePath, lsTkmPath[i])
+            sYearPath = SearchEngine.JudgeYearDataExsit(lsTkmPath[i], sDateBeg)
+            if sYearPath != []:
+                lsFilePathname = SearchEngine.GetObjFilenameList(sYearPath[0], ".tif")
+                if lsFilePathname != []:
+                    lBds = []
+                    for Bd in DataStruct.GetBasicDataInforList(lsFilePathname):
+                        iDataProduct = Bd.iDataProduct
+                        dtTemp = Bd.sTimeDeail
+                        if (dtTemp < sDateBeg or dtTemp > sDateEnd):
+                            continue
+                        if (iDataProduct == iDataSet and Bd.iCloudLevel <= iCloulLevel):
+                            lBds.append(Bd)
+                        elif iDataProduct == iDataMap:
+                            bDataMap = True
+                            bdsMap = Bd
+                    if lBds != []:
+                        lBds = sorted(lBds, key = lambda a: a.sTimeDeail)
+                        if (bDataMap):
+                            lBds.insert(0, bdsMap)
+                            bDataMap = False
+                    res.append(lBds)
+        return res
+
+    @staticmethod
     def JudgeYearDataExsit(sTkmGridPath, sDateTime):
         '''给定一个10km网格的路径和日期（8位），判断该路径下是否有与给定日期对应年份的数据
            存在，则返回加上年份后的路径列表；

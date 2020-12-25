@@ -15,6 +15,157 @@ import time
 class Stitching():
 
     @staticmethod
+    def ObtainDateIntersectionAmongGridSet(llBds):
+        '''''''''''''''''''''''''''''''''''''''
+        //1 遍历所有10km格网，求所有时相的交集
+        //2 遍历所有10km格网，对每一个格网，剔除日期在全局时相交集之外的数据'''
+
+        lbdsInterResult = llBds[0]
+        for bd in llBds[1:]:
+            pass
+
+    @staticmethod
+    def ExtractTimeSeriesValueAndWritetofile(lBds, sResultPath):
+        '''/************逻辑***************/
+            //1 提取时间序列信息
+            //1-1 该格网有样本数据
+            //1-2 该格网没有样本数据
+            //2 将时间序列数据写入文件
+
+            //************实现***************//'''
+        iZoneIndex = lBds[0].sPathName.index("326")
+        sZoneName = lBds[0].sPathName[iZoneIndex: 5 + iZoneIndex]
+        iXSize = lBds[0].iColumnRange
+        iYSize = lBds[0].iRowRange
+        sProductTemp = str(lBds[0].iDataProduct) #获取第一幅影像的数据类型，用于判断是否是样本数据
+        liBandsDataAll = []
+        lsPixelsTimeSeriesSample = []
+        lsPixelsTimeSeriesDeploy = []
+        if (sProductTemp[-1:] == "4"):
+            img = gdal.Open(lBds[0].sPathName, gdal.GA_Update)
+            iSampleInfo = img.ReadAsArray(0, 0, iXSize, iYSize)
+            liBandsDataAll.append(iSampleInfo)
+            for Bd in lBds[1:]:
+                img = gdal.Open(Bd.sPathName, gdal.GA_Update)
+                iSampleInfo = img.ReadAsArray(0, 0, iXSize, iYSize)[:4]
+                liBandsDataAll.append(iSampleInfo)
+            for iRow in range(iYSize):
+                for iColumn in range(iXSize):
+                    sPixelTimeSeries = sZoneName + lBds[0].sGridCode + "_" + str(iRow) + "_" + str(iColumn)
+                    sPixelTimeSeries += "," + str(liBandsDataAll[0][0, iColumn, iRow]) + "," + str(liBandsDataAll[0][1, iColumn, iRow])
+                    for i in range(1, len(liBandsDataAll)):
+                        sPixelTimeSeries += "," + lBds[i].sTimeDeail \
+                            + "," + str(liBandsDataAll[i][0, iRow, iColumn]) + ',' + str(liBandsDataAll[i][1, iRow, iColumn])\
+                            + "," + str(liBandsDataAll[i][2, iRow, iColumn]) + ',' + str(liBandsDataAll[i][3, iRow, iColumn])
+                    lsPixelsTimeSeriesDeploy.append(sPixelTimeSeries)
+                    if (liBandsDataAll[0][0, iColumn, iRow] != 0):
+                        lsPixelsTimeSeriesSample.append(sPixelTimeSeries)
+        else:
+            for Bd in lBds:
+                img = gdal.Open(Bd.sPathName, gdal.GA_Update)
+                iSampleInfo = img.ReadAsArray(0, 0, iXSize, iYSize)[:4]
+                liBandsDataAll.append(iSampleInfo)
+            for iRow in range(iYSize):
+                for iColumn in range(iXSize):
+                    sPixelTimeSeries = sZoneName + lBds[0].sGridCode + "_" + str(iRow) + "_" + str(iColumn)
+                    sPixelTimeSeries += "," + '0' + "," + '0'
+                    for i in range(len(liBandsDataAll)):
+                        sPixelTimeSeries += "," + lBds[i].sTimeDeail \
+                            + "," + str(liBandsDataAll[i][0, iRow, iColumn]) + ',' + str(liBandsDataAll[i][1, iRow, iColumn])\
+                            + "," + str(liBandsDataAll[i][2, iRow, iColumn]) + ',' + str(liBandsDataAll[i][3, iRow, iColumn])
+                    lsPixelsTimeSeriesDeploy.append(sPixelTimeSeries)
+        
+        with open(os.path.join(sResultPath, 'pixel_deploy.txt'), 'w', encoding='utf8') as f:
+            f.write('\n'.join(lsPixelsTimeSeriesDeploy) + '\n')
+        if lsPixelsTimeSeriesSample != []:
+            with open(os.path.join(sResultPath, 'pixel_sample.txt'), 'w', encoding='utf8') as f:
+                f.write('\n'.join(lsPixelsTimeSeriesSample) + '\n')
+
+    @staticmethod
+    def ExpandToCoverEntire10kmGrid(lBds, sResultPath):
+        '''/************逻辑***************/
+        //1 判断是否覆盖满，如果否：
+        //1-1 确定新影像的基本参数（名称、路径等）
+        //1-2 创建新影像
+        //1-3 根据原影像，赋值新影像
+        //1-4 将新影像添加到结果序列
+        //2 如果覆盖满，则直接添加到新结果序列
+            
+        //************实现***************//'''
+        lbdsFullCover = []
+        for Bd in lBds:
+            if (Bd.iRowRange != 10000 / Bd.iResolution) or (Bd.iColumnRange != 10000 / Bd.iResolution):
+                bdsFullCover = basic_data_struct()
+                bdsFullCover = Bd
+                bdsFullCover.iRowBeg = 0
+                bdsFullCover.iRowRange = 10000 / bdsFullCover.iResolution
+                bdsFullCover.iColumnBeg = 0
+                bdsFullCover.iColumnRange = 10000 / bdsFullCover.iResolution
+                iLengthOfLocatMark = bdsFullCover.iRowRange.ToString().Length
+                IntToString = CoordinateAndProjection.IntToString
+                RltImgName = bdsFullCover.sGridCode + bdsFullCover.sTimeDeail + IntToString(bdsFullCover.iColumnBeg, iLengthOfLocatMark) + IntToString(bdsFullCover.iRowBeg, iLengthOfLocatMark)\
+                                + bdsFullCover.iColumnRange.ToString() + bdsFullCover.iRowRange.ToString()\
+                                + IntToString(bdsFullCover.iResolution, 3)\
+                                + bdsFullCover.iCloudLevel.ToString()\
+                                + IntToString(bdsFullCover.iDataProduct, 3) + ".tif"
+                iZoneIndex = bdsFullCover.sPathName.index("326")
+                sZoneName = bdsFullCover.sPathName[iZoneIndex: 5 + iZoneIndex]
+                bdsFullCover.sPathName = os.path.join(sResultPath, sZoneName, RltImgName)
+                iRltDataType = Stitching.JudgeResultDataType(bdsFullCover.iDataProduct, 0)
+                iBandNum = Stitching.CreateResultImg_2(bdsFullCover, Bd, iRltDataType)
+
+                lbds_temp = [Bd]
+                Stitching.ModelOfIntegrate_3(bdsFullCover, lbds_temp, iRltDataType, iBandNum)
+                lbdsFullCover.append(bdsFullCover)
+            else:
+                lbdsFullCover.append(Bd)
+        
+        return lbdsFullCover
+
+    @staticmethod
+    def MakeUniqueForEveryDate(lbds, iDataSet, iDataMap, sRslPath):
+        time_dic = {}
+        for lbd in lbds:
+            if lbd.sTimeDeail not in time_dic.keys():
+                time_dic[lbd.sTimeDeail] = [lbd]
+            else:
+                time_dic[lbd.sTimeDeail].append(lbd)
+        res = []
+        for lbds in time_dic.values():
+            if len(lbds) > 1:
+                res.append(Stitching.SynthesizeSameTemporalImages(lbds, sRslPath))
+            else:
+                res.append(lbds[0])
+        res.sort(key = lambda a: a.sTimeDeail)
+        return res
+
+    @staticmethod
+    def SynthesizeSameTemporalImages(lBds, sResultPath):
+        lBds = sorted(lBds, key = lambda a: a.iCloudLevel)
+
+        bdsRlt = lBds[0]
+        bdsRlt.iCloudLevel = 0 #合成后默认云量为<10%
+        bdsRlt.iRowBeg = 0
+        bdsRlt.iRowRange = int(10000 / bdsRlt.iResolution)
+        bdsRlt.iColumnBeg = 0
+        bdsRlt.iColumnRange = int(10000 / bdsRlt.iResolution)
+        iLengthOfLocatMark = len(str(bdsRlt.iRowRange))
+        IntToString = CoordinateAndProjection.IntToString
+        RltImgName = bdsRlt.sGridCode + bdsRlt.sTimeDeail + IntToString(bdsRlt.iColumnBeg, iLengthOfLocatMark) + IntToString(bdsRlt.iRowBeg, iLengthOfLocatMark)\
+                                                                    + bdsRlt.iColumnRange.ToString() + bdsRlt.iRowRange.ToString()\
+                                                                    + IntToString(bdsRlt.iResolution, 3)\
+                                                                    + bdsRlt.iCloudLevel.ToString()\
+                                                                    + IntToString(bdsRlt.iDataProduct, 3) + ".tif"
+        iZoneIndex = bdsRlt.sPathName.index("326")
+        sZoneName = bdsRlt.sPathName[iZoneIndex: 5 + iZoneIndex]
+        bdsRlt.sPathName = os.path.join(sResultPath, sZoneName, RltImgName)
+        iRltDataType = Stitching.JudgeResultDataType(bdsRlt.iDataProduct, 0)
+        iBandNum = Stitching.CreateResultImg_2(bdsRlt, lBds[0], iRltDataType)
+        Stitching.ModelOfIntegrate_3(bdsRlt, lBds, iRltDataType, iBandNum)
+
+        return bdsRlt
+
+    @staticmethod
     def get_lefttop_rightbttn_Grid(lbdsBtw10km):
         '''获取序列中最左上角格网和右下角格网
            输入 lbdsBtw10km：basic_data_struct list
