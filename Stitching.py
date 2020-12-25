@@ -152,9 +152,9 @@ class Stitching():
         iLengthOfLocatMark = len(str(bdsRlt.iRowRange))
         IntToString = CoordinateAndProjection.IntToString
         RltImgName = bdsRlt.sGridCode + bdsRlt.sTimeDeail + IntToString(bdsRlt.iColumnBeg, iLengthOfLocatMark) + IntToString(bdsRlt.iRowBeg, iLengthOfLocatMark)\
-                                                                    + bdsRlt.iColumnRange.ToString() + bdsRlt.iRowRange.ToString()\
+                                                                    + str(bdsRlt.iColumnRange) + str(bdsRlt.iRowRange)\
                                                                     + IntToString(bdsRlt.iResolution, 3)\
-                                                                    + bdsRlt.iCloudLevel.ToString()\
+                                                                    + str(bdsRlt.iCloudLevel)\
                                                                     + IntToString(bdsRlt.iDataProduct, 3) + ".tif"
         iZoneIndex = bdsRlt.sPathName.index("326")
         sZoneName = bdsRlt.sPathName[iZoneIndex: 5 + iZoneIndex]
