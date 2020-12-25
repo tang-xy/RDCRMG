@@ -51,9 +51,9 @@ def ExtractSITSforEvery10kmGrid(lbds, iDataSet, iDataMap, sWorkSpace):
 
 def GenerateSITSOfPixleLevel(bIrregular = True):
     _sDataHome = r"H:\RDCRMG_test_data"
-    _sRslPath = r"H:\32652"
+    _sRslPath = r"./"
 
-    sGridcodeTargetFile = r"H:\32652\4_Xinyuan_grid_spl.csv"
+    sGridcodeTargetFile = r"./8_Manasi_grid_spl.csv"
 
     iDataSet = 1  #选择待分类数据产品类型，001：GF1-16M
     iDataMap = 664  #选择标签数据产品类型，004：作物样本数据的训练集  664：作物样本数据的测试集
