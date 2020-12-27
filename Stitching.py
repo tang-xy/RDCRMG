@@ -35,8 +35,8 @@ class Stitching():
             //************实现***************//'''
         iZoneIndex = lBds[0].sPathName.index("326")
         sZoneName = lBds[0].sPathName[iZoneIndex: 5 + iZoneIndex]
-        iXSize = lBds[0].iColumnRange
-        iYSize = lBds[0].iRowRange
+        iXSize = int(lBds[0].iColumnRange)
+        iYSize = int(lBds[0].iRowRange)
         sProductTemp = str(lBds[0].iDataProduct) #获取第一幅影像的数据类型，用于判断是否是样本数据
         liBandsDataAll = []
         lsPixelsTimeSeriesSample = []
