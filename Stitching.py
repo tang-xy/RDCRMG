@@ -98,9 +98,9 @@ class Stitching():
                 bdsFullCover = basic_data_struct()
                 bdsFullCover = copy.deepcopy(Bd)
                 bdsFullCover.iRowBeg = 0
-                bdsFullCover.iRowRange = 10000 / bdsFullCover.iResolution
+                bdsFullCover.iRowRange = int(10000 / bdsFullCover.iResolution)
                 bdsFullCover.iColumnBeg = 0
-                bdsFullCover.iColumnRange = 10000 / bdsFullCover.iResolution
+                bdsFullCover.iColumnRange = int(10000 / bdsFullCover.iResolution)
                 iLengthOfLocatMark = len(str(bdsFullCover.iRowRange))
                 IntToString = CoordinateAndProjection.IntToString
                 RltImgName = bdsFullCover.sGridCode + bdsFullCover.sTimeDeail + IntToString(bdsFullCover.iColumnBeg, iLengthOfLocatMark) + IntToString(bdsFullCover.iRowBeg, iLengthOfLocatMark)\

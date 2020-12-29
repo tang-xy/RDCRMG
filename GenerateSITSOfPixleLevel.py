@@ -52,7 +52,7 @@ def ExtractSITSforEvery10kmGrid(lbds, iDataSet, iDataMap, sWorkSpace):
 def GenerateSITSOfPixleLevel(bIrregular = True):
     _sDataHome = r"/mnt/datapool/RemoteSensingData1/DataWorking/"
     _sRslPath = r"./"
-
+    # _sDataHome = "H:\\RDCRMG_test_data"
     sGridcodeTargetFile = r"./8_Manasi_grid_spl.csv"
 
     iDataSet = 1  #选择待分类数据产品类型，001：GF1-16M
