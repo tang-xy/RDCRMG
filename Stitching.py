@@ -52,13 +52,13 @@ class Stitching():
             for iRow in range(iYSize):
                 for iColumn in range(iXSize):
                     sPixelTimeSeries = sZoneName + lBds[0].sGridCode + "_" + str(iRow) + "_" + str(iColumn)
-                    sPixelTimeSeries += "," + str(liBandsDataAll[0][0, iColumn, iRow]) + "," + str(liBandsDataAll[0][1, iColumn, iRow])
+                    sPixelTimeSeries += "," + str(liBandsDataAll[0][0, iRow, iColumn]) + "," + str(liBandsDataAll[0][1, iRow, iColumn])
                     for i in range(1, len(liBandsDataAll)):
                         sPixelTimeSeries += "," + lBds[i].sTimeDeail \
                             + "," + str(liBandsDataAll[i][0, iRow, iColumn]) + ',' + str(liBandsDataAll[i][1, iRow, iColumn])\
                             + "," + str(liBandsDataAll[i][2, iRow, iColumn]) + ',' + str(liBandsDataAll[i][3, iRow, iColumn])
                     lsPixelsTimeSeriesDeploy.append(sPixelTimeSeries)
-                    if (liBandsDataAll[0][0, iColumn, iRow] != 0):
+                    if (liBandsDataAll[0][0, iRow, iColumn] != 0):
                         lsPixelsTimeSeriesSample.append(sPixelTimeSeries)
         else:
             for Bd in lBds:
