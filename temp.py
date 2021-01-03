@@ -17,7 +17,7 @@ for root, dirnames, filenames in os.walk(rootpath1):
             print(path1 + " not exist")
             continue
         path2 = filedic[filename]
-        if open(path1).read() != open(path2).read():
+        if open(path1, mode='rb').read() != open(path2, mode='rb').read():
             print(path1 + " error")
 
 print("well done")
