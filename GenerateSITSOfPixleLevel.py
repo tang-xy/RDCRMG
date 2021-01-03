@@ -56,7 +56,7 @@ def GenerateSITSOfPixleLevel(bIrregular = True):
     sGridcodeTargetFile = r"./8_Manasi_grid_spl.csv"
 
     iDataSet = 1  #选择待分类数据产品类型，001：GF1-16M
-    iDataMap = 664  #选择标签数据产品类型，004：作物样本数据的训练集  664：作物样本数据的测试集
+    iDataMap = 4  #选择标签数据产品类型，004：作物样本数据的训练集  664：作物样本数据的测试集
     iCloudlevel = 9    # <100%  之所以云量的阈值如此高，在于发现云检测算法还无法区分雪与云
                         #在高程方差比较大的地方，高山积雪容易混淆，导致误检测而错误舍弃一些质量较好的影像，如西北
 
